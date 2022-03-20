@@ -10,12 +10,41 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from core.models import Transfer
+from core.models import Transfer, Account, Bank
 from bank.serializers import (
+    BankSerializer,
+    AccountSerializer,
     TransferSerializer,
     FundSerializer,
     IntraBankTransferSerializer,
 )
+
+
+class BankListView(generics.ListAPIView):
+    serializer_class = BankSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Bank.objects.all()
+    my_tags = ["Bank"]
+
+
+class BankAccountListView(generics.ListAPIView):
+    serializer_class = AccountSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Transfer.objects.all()
+    lookup_field = "bank_id"
+    my_tags = ["Account"]
+
+    def get_queryset(self):
+        if self.lookup_field is None:
+            return None
+        bank_id = self.kwargs[self.lookup_field]
+
+        try:
+            queryset = Account.objects.filter(bank__uuid=bank_id)
+        except ValidationError:
+            raise Http404
+
+        return queryset
 
 
 class TransferListView(generics.ListAPIView):
@@ -91,7 +120,7 @@ def make_transfer(request):
     },
     operation_description="Add fund to an account",
     tags=[
-        "Fund",
+        "Transfer",
     ],
 )
 @permission_classes(IsAuthenticated)
@@ -133,7 +162,7 @@ def add_fund(request, account_id):
     },
     operation_description="Removes fund from an account",
     tags=[
-        "Fund",
+        "Transfer",
     ],
 )
 @permission_classes(IsAuthenticated)

@@ -6,13 +6,23 @@ from django.db.models import Q
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Transfer
+from core.models import Transfer, Bank, Account
 from core.utils import sample_bank, sample_account, sample_transfer
 
-from bank.serializers import TransferSerializer
+from bank.serializers import (
+    TransferSerializer,
+    BankSerializer,
+    AccountSerializer,
+)
 
 
+BANK_LIST_URL = reverse("bank:bank-list")
 TRANSFER_MAKE_URL = reverse("bank:transfer-make")
+
+
+def bank_account_list_url(bank_id: str):
+    """Return the list account URL for a bank"""
+    return reverse("bank:bank-account-list", args=[bank_id])
 
 
 def account_transfer_list_url(account_id: str):
@@ -55,6 +65,37 @@ class PrivateBankAPITests(TestCase):
             password="Testpassword123",
         )
         self.client.force_authenticate(user=self.user)
+
+    def test_bank_list_success(self):
+        """Test Bank list"""
+
+        sample_bank()
+        sample_bank()
+
+        res = self.client.get(BANK_LIST_URL)
+
+        banks = Bank.objects.all()
+        serializer = BankSerializer(banks, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+
+    def test_bank_account_list_success(self):
+        """Test bank account list"""
+        test_bank = sample_bank()
+        test_bank_id = str(test_bank.uuid)
+
+        sample_account(bank=test_bank, balance=20)
+        sample_account(bank=test_bank, balance=20)
+
+        url = bank_account_list_url(test_bank_id)
+        res = self.client.get(url)
+
+        accounts = Account.objects.filter(bank__uuid=test_bank_id)
+        serializer = AccountSerializer(accounts, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
 
     def test_transfer_list_success(self):
         """Test transfer list for an account"""
