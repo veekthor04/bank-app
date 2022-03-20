@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "drf_yasg",
+    "corsheaders",
     # Local
     "core.apps.CoreConfig",
     "user.apps.UserConfig",
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -180,3 +182,12 @@ SWAGGER_SETTINGS = {
 ADMIN_USERNAME = os.environ.get("DJANGO_SUPERUSER_USERNAME")
 ADMIN_EMAIL = os.environ.get("DJANGO_SUPERUSER_EMAIL")
 ADMIN_PASSWORD = os.environ.get("DJANGO_SUPERUSER_PASSWORD")
+
+
+# Allow cors
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+    "http://127.0.0.1:8000",
+]

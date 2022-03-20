@@ -21,6 +21,8 @@ from bank.serializers import (
 
 
 class BankListView(generics.ListAPIView):
+    """Bank list"""
+
     serializer_class = BankSerializer
     permission_classes = [IsAuthenticated]
     queryset = Bank.objects.all()
@@ -28,6 +30,8 @@ class BankListView(generics.ListAPIView):
 
 
 class BankAccountListView(generics.ListAPIView):
+    """Bank Account list for a bank"""
+
     serializer_class = AccountSerializer
     permission_classes = [IsAuthenticated]
     queryset = Transfer.objects.all()
@@ -48,6 +52,8 @@ class BankAccountListView(generics.ListAPIView):
 
 
 class TransferListView(generics.ListAPIView):
+    """Transfer list for an account"""
+
     serializer_class = TransferSerializer
     permission_classes = [IsAuthenticated]
     queryset = Transfer.objects.all()
@@ -74,15 +80,26 @@ class TransferListView(generics.ListAPIView):
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            "source": openapi.Schema(type=openapi.TYPE_STRING),
-            "destination": openapi.Schema(type=openapi.TYPE_STRING),
-            "amount": openapi.Schema(type=openapi.TYPE_NUMBER),
-            "info": openapi.Schema(type=openapi.TYPE_STRING),
+            "source": openapi.Schema(
+                type=openapi.TYPE_STRING, description="($uuid) title: Source"
+            ),
+            "destination": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="($uuid) title: Destination",
+            ),
+            "amount": openapi.Schema(
+                type=openapi.TYPE_NUMBER,
+                description="($decimal) title: Amount",
+            ),
+            "info": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="title: Info maxLength: 255",
+            ),
         },
     ),
     responses={
-        201: "Transfer was successful",
-        404: "Not found.",
+        201: openapi.Response("Success", IntraBankTransferSerializer),
+        400: "Bad Request",
     },
     operation_description="Intra-bank transfer from one account to another",
     tags=[
@@ -92,6 +109,7 @@ class TransferListView(generics.ListAPIView):
 @permission_classes(IsAuthenticated)
 @api_view(["PUT"])
 def make_transfer(request):
+    """Transfers fund from one account to another within the same bank"""
 
     # copy request data, set transfer type to intra bank transfer
     data = request.data.copy()
@@ -109,14 +127,23 @@ def make_transfer(request):
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            "src_bank": openapi.Schema(type=openapi.TYPE_STRING),
-            "amount": openapi.Schema(type=openapi.TYPE_NUMBER),
-            "info": openapi.Schema(type=openapi.TYPE_STRING),
+            "src_bank": openapi.Schema(
+                type=openapi.TYPE_STRING, description="($uuid) title: Src bank"
+            ),
+            "amount": openapi.Schema(
+                type=openapi.TYPE_NUMBER,
+                description="($decimal) title: Amount",
+            ),
+            "info": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="title: Info maxLength: 255",
+            ),
         },
+        required=["amount", "info"],
     ),
     responses={
-        201: "Fund was successful",
-        404: "Not found.",
+        201: openapi.Response("Success", FundSerializer),
+        400: "Bad Request",
     },
     operation_description="Add fund to an account",
     tags=[
@@ -126,6 +153,7 @@ def make_transfer(request):
 @permission_classes(IsAuthenticated)
 @api_view(["PUT"])
 def add_fund(request, account_id):
+    """Adds fund to an account"""
 
     # set fund type and account to data
     data = request.data.copy()
@@ -151,14 +179,22 @@ def add_fund(request, account_id):
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            "dst_bank": openapi.Schema(type=openapi.TYPE_STRING),
-            "amount": openapi.Schema(type=openapi.TYPE_NUMBER),
-            "info": openapi.Schema(type=openapi.TYPE_STRING),
+            "dst_bank": openapi.Schema(
+                type=openapi.TYPE_STRING, description="($uuid) title: Dst bank"
+            ),
+            "amount": openapi.Schema(
+                type=openapi.TYPE_NUMBER,
+                description="($decimal) title: Amount",
+            ),
+            "info": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="title: Info maxLength: 255",
+            ),
         },
     ),
     responses={
-        201: "Fund was successfully",
-        404: "Not found.",
+        201: openapi.Response("Success", FundSerializer),
+        400: "Bad Request",
     },
     operation_description="Removes fund from an account",
     tags=[
@@ -168,6 +204,7 @@ def add_fund(request, account_id):
 @permission_classes(IsAuthenticated)
 @api_view(["PUT"])
 def remove_fund(request, account_id):
+    """Removes fund from an account"""
 
     # copy request data, set fund type to remove fund and account to data
     data = request.data.copy()

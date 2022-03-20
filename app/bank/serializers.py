@@ -5,12 +5,20 @@ from core.models import Bank, Account, Transfer
 
 
 class BankSerializer(serializers.ModelSerializer):
+    """
+    Bank serializer
+    Returns all fields except id
+    """
     class Meta:
         model = Bank
         exclude = ["id"]
 
 
 class AccountSerializer(serializers.ModelSerializer):
+    """
+    Account serializer
+    Returns all fields except id
+    """
     bank = BankSerializer()
 
     class Meta:

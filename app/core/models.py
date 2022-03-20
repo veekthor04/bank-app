@@ -64,7 +64,10 @@ class Account(BaseModel):
 
 
 class Transfer(models.Model):
-    """Transfer model"""
+    """
+    Transfer model
+    All fields are optional except amount, info and transfer_type
+    """
 
     ADD_FUND = "add_fund"
     REMOVE_FUND = "remove_fund"
