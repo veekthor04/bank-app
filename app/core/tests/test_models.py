@@ -5,17 +5,6 @@ from core.models import Account, Transfer
 from core.utils import sample_bank, sample_account
 
 
-def sample_user(
-    username="testuser", email="test@test.com", password="Testpassword_123"
-):
-    """Create a sample user"""
-    return get_user_model().objects.create_user(
-        username,
-        email,
-        password,
-    )
-
-
 class ModelTests(TestCase):
     def test_create_user_successful(self):
         """ "Test creating a new user with an email is successful"""

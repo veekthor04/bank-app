@@ -5,6 +5,9 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
+from core.utils import sample_user
+
+
 # Reverse URLs
 SIGNUP_USER_URL = reverse("user:signup")
 LOGIN_URL = reverse("user:login")
@@ -75,11 +78,8 @@ class PublicUserApiTests(TestCase):
 
     def test_login_invalid_credentials(self):
         """Test that token is not created if login credentials are invalid"""
-        create_user(
-            username="testuser",
-            email="test@test.com",
-            password="Testpassword123",
-        )
+
+        sample_user()
         payload = {"username": "testuser", "password": "invalid"}
         response = self.client.post(LOGIN_URL, payload)
 
@@ -114,11 +114,7 @@ class PrivateUserApiTests(TestCase):
     """Test API requests that require authentication"""
 
     def setUp(self):
-        self.user = create_user(
-            username="testuser",
-            email="test@test.com",
-            password="Testpassword123",
-        )
+        self.user = sample_user()
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 

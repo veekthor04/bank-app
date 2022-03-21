@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+from django.contrib.auth import get_user_model
+
 from drf_yasg.inspectors import SwaggerAutoSchema
 
 from core.models import Bank, Account, Transfer
@@ -38,3 +40,14 @@ def sample_transfer(**params) -> Transfer:
     defaults.update(params)
 
     return Transfer.objects.create(**defaults)
+
+
+def sample_user(
+    username="testuser", email="test@test.com", password="Testpassword_123"
+):
+    """Create a sample user"""
+    return get_user_model().objects.create_user(
+        username,
+        email,
+        password,
+    )

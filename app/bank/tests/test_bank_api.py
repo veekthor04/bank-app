@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
 from django.db.models import Q
@@ -7,7 +6,12 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import Transfer, Bank, Account
-from core.utils import sample_bank, sample_account, sample_transfer
+from core.utils import (
+    sample_bank,
+    sample_account,
+    sample_transfer,
+    sample_user,
+)
 
 from bank.serializers import (
     TransferSerializer,
@@ -59,11 +63,7 @@ class PrivateBankAPITests(TestCase):
 
     def setUp(self) -> None:
         self.client = APIClient()
-        self.user = get_user_model().objects.create(
-            username="testuser",
-            email="test@test.com",
-            password="Testpassword123",
-        )
+        self.user = sample_user()
         self.client.force_authenticate(user=self.user)
 
     def test_bank_list_success(self):
