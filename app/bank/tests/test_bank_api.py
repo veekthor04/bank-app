@@ -48,7 +48,7 @@ class PublicBankAPITests(TestCase):
 
     def test_login_required(self):
         """Test login is required to access API"""
-        url = account_transfer_list_url("test_id")
+        url = account_transfer_list_url("8bce8de8-4856-4113-aff7-0812a5c6ea29")
         res = self.client.get(url)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -134,12 +134,12 @@ class PrivateBankAPITests(TestCase):
     def test_transfer_list_not_found(self):
         """Test transfer list for an incorrect account"""
 
-        test_account_id = "test-id"
+        test_account_id = "8bce8de8-4856-4113-aff7-0812a5c6ea29"
 
         url = account_transfer_list_url(test_account_id)
         res = self.client.get(url)
 
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(res.data, [])
 
     def test_make_transfer_success(self):
         """Test transfer make"""
@@ -246,7 +246,7 @@ class PrivateBankAPITests(TestCase):
 
         test_bank = sample_bank()
 
-        test_account_id = "test-id"
+        test_account_id = "8bce8de8-4856-4113-aff7-0812a5c6ea29"
 
         payload = {
             "src_bank": test_bank.uuid,
@@ -284,7 +284,7 @@ class PrivateBankAPITests(TestCase):
 
         test_bank = sample_bank()
 
-        test_account_id = "test-id"
+        test_account_id = "8bce8de8-4856-4113-aff7-0812a5c6ea29"
 
         payload = {
             "dst_bank": test_bank.uuid,

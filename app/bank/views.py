@@ -39,6 +39,9 @@ class BankAccountListView(generics.ListAPIView):
     my_tags = ["Account"]
 
     def get_queryset(self):
+        """
+        Return the accounts linked to selected bank
+        """
         if self.lookup_field is None:
             return None
         bank_id = self.kwargs[self.lookup_field]
@@ -61,6 +64,9 @@ class TransferListView(generics.ListAPIView):
     my_tags = ["Transfer"]
 
     def get_queryset(self):
+        """
+        Return transfers linked to selected account
+        """
         if self.lookup_field is None:
             return None
         account_id = self.kwargs[self.lookup_field]

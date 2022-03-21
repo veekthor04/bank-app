@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class BaseModel(models.Model):
-    """Base model that contains name and uuid"""
+    """An abstract parent class for models contains name and uuid"""
 
     name = models.CharField(max_length=150)
     uuid = models.UUIDField(
